@@ -9,28 +9,29 @@
 
 Room for improvement:
 - Enhance x-axis of the EU gas storage utilization seasonality chart by charting month-day, rather than the current day of year
-- Request and automate degree days .csv dataretrival from degreedays.net
 - Run multiple Linear Regression model to return potentially higher R^2 to forecast storage flows
 	- potential features to add: daily production, net imports
+- Run grid search on SARIMA model to find optimal hyperparameters
 
 To do:
 - Forecast projected gas storage:
-    - Forecast degree days as a time series likely using the SARIMA prediction model
     - Use line of best fit established from scikit-learn's LinearRegression fitting to predict net storage flows
     - Feed model historic injection rate (supply)
     - Increase weight of injection rate variable to coincide with most recent supply trends
-- Build new seasonality chart and anlysis to visualize and discuss findings, limitations, etc.
+- Build new seasonality chart and analysis to visualize and discuss findings, limitations, etc.
 - upload .ipynb files to display code output
+- Conduct gas storage scenario analysis based on historic min and max degree days
 
 
 ## Storage Forecasting Methodology
 - Confirmed the association between degree days and net storage flows is statistically significant
-- Established the Linear Regression ML method as a likely candidate to forecast storage flows as a result
+- Established the Linear Regression ML method to forecast storage flows based on degree days
     - The Supervised Learning category is chosen given the structured and labeled dataset
     - Under the Supervised Learning umbrella, the Regression Model subcategory is chosen given the expected continuous data output
 - We conclude The Linear Regression method is an accurate model to run after assessing the model's performance
 - A line of best fit is found by running OLS between degree days and net gas storage flows
     - a significant R^2 and reasonable RMSE allows us to proceed with the forecasting
+- Degree days is forecasted using the SARIMA model given its seasonal nature
 
 
 ## Sources
