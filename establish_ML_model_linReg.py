@@ -26,9 +26,10 @@ temp_df.columns = ['year', 'month', 'temperature']
 # convert month to number
 month_conv = {'Jan':1, 'Feb':2, 'Mar':3, 'Apr':4, 'May':5, 'Jun':6, 'Jul':7, 'Aug':8, 'Sep':9, 'Oct':10, 'Nov':11, 'Dec':12}
 temp_df['month'] = temp_df['month'].map(month_conv)
-# combine cols to form date, sort by date
+# combine cols to form date, resample to get last day of month
 temp_df['date'] = pd.to_datetime(temp_df[['year', 'month']].assign(day=1))
-temp_df = temp_df.sort_values(by='date')
+temp_df = temp_df.drop(['year', 'month'], axis=1).set_index('date')
+temp_df = temp_df.resample('M').sum().reset_index()
 # convert temperature to F
 temp_df['temperature'] = temp_df['temperature'] * (9/5) + 32
 # add column to get degree days, with base 65 degrees
@@ -40,11 +41,11 @@ temp_df['degree_days'] = temp_df['temperature'] - 65
 # create DataFrame of gasDayStart and storage flow from europe_gas_storage.py
 storage_flow_df = df[['gasDayStart', 'net storage flow']]
 # sum flows by month
-storage_flow_df = storage_flow_df.set_index('gasDayStart').resample('MS').sum().reset_index()
+storage_flow_df = storage_flow_df.set_index('gasDayStart').resample('M').sum().reset_index()
 # merge df_storage_flow with dd on date
 temp_df_merged = pd.merge(temp_df, storage_flow_df, how='inner', left_on='date', right_on='gasDayStart')
 # show only relevant data for analysis: drop columns and set date as index
-temp_df_merged = temp_df_merged.drop(['year', 'month', 'temperature', 'gasDayStart'], axis=1).set_index('date')
+temp_df_merged = temp_df_merged.drop(['temperature', 'gasDayStart'], axis=1).set_index('date')
 
 
 ## Visualize and Quantify Potential Correlation
@@ -102,10 +103,10 @@ plt.ylabel('Net EU Gas Storage Flows (GWh/d)')
 plt.show()
 
 # show slope and intercept of line of best fit
-a = (predictions[2] - predictions[1]) / (X_dd[2] - X_dd[1])
-b = predictions[1] - (a * X_dd[1])
-print('slope: ', a)
-print('intercept: ', b)
+slope = (predictions[2] - predictions[1]) / (X_dd[2] - X_dd[1])
+intercept = predictions[1] - (slope * X_dd[1])
+print('slope: ', slope)
+print('intercept: ', intercept)
 
 
 ## Assessing regression model performance
