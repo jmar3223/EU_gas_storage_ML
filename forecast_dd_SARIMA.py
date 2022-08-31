@@ -7,11 +7,11 @@
 
 import pandas as pd
 import seaborn as sns
-from establish_ML_model_linReg import temp_df_merged
 import matplotlib.pyplot as plt
-from statsmodels.tsa.seasonal import seasonal_decompose
 import statsmodels.api as sm
+from statsmodels.tsa.seasonal import seasonal_decompose
 from pandas.tseries.offsets import DateOffset
+from establish_ML_model_linReg import temp_df_merged
 
 
 ### Reviewing seasonality to determine usage of SARIMA model
@@ -36,7 +36,6 @@ plt.show()
 
 
 ### SARIMA modelling
-import statsmodels.api as sm
 sarima = sm.tsa.statespace.SARIMAX(szn_dd['degree_days'], order=(1,1,1), seasonal_order=(1,1,1,12))
 results = sarima.fit()
 szn_dd['forecast'] = results.predict(start=120, end=132, dynamic=False)
@@ -44,7 +43,6 @@ szn_dd[['degree_days', 'forecast']].plot(figsize=(12,8))
 plt.show()
 
 # create NaN df of future dates and concat to original df to use for forecasting
-from pandas.tseries.offsets import DateOffset
 pred_date = [szn_dd.index[-1] + DateOffset(months=x) for x in range(0,36)]
 pred_date=pd.DataFrame(index=pred_date[1:], columns=szn_dd.columns)
 szn_dd = pd.concat([szn_dd, pred_date])
